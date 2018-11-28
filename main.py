@@ -16,6 +16,8 @@ from cfaparser import utils
 from cfaparser import hciframe
 from cfaparser.l2cap import L2capHandler
 
+
+## Snoop file header magic
 SNOOP_FILE_MAGIC = b'btsnoop\x00\x00\x00\x00\x01\x00\x00\x03\xea'
 SNOOP_FILE_MAGIC_LEN = 16
 
@@ -38,7 +40,7 @@ def process_frame(frame_no, frame_content, frame_len):
 def main():
     global file_size
     frame_no = 0
-    with open("files/test2.cfa", mode='rb') as f:
+    with open("files/test1.cfa", mode='rb') as f:
         pos = f.seek(0)
         if f.read(SNOOP_FILE_MAGIC_LEN) == SNOOP_FILE_MAGIC:
             utils.info("It's a BT snoop file")
@@ -79,9 +81,10 @@ def main():
         if int.from_bytes(frame.header[:2], byteorder="little", signed=False) == 0x2edc:
             pass #ignore QCA Debug Data
         else:
-            utils.info("======Frame NO: {}===========".format(frame.frame_no))
-            hander.process(frame.payload)
-            utils.info("======   End      ===========")
+            #utils.info("======Frame NO: {}===========".format(frame.frame_no))
+            if frame.frame_no in [247, 251, 253, 260, 262, 263, 339]:
+                hander.process(frame.payload)
+            #utils.info("======   End      ===========")
 
 
 if __name__ == "__main__":
